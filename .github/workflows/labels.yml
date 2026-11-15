@@ -13,6 +13,8 @@ name: Labels
 on:
   workflow_call:
 
+permissions: {}
+
 jobs:
   labels:
     name: The repository's labels are the org's
