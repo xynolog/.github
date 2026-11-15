@@ -1,0 +1,52 @@
+name: DCO
+
+# Every commit of a pull request carries a Signed-off-by from its author: the
+# Developer Certificate of Origin (CONTRIBUTING.md). A repository's CI calls
+# this from a job its CI Gate waits for:
+#
+#   dco:
+#     uses: xynolog/.github/.github/workflows/dco.yml@<commit>
+#
+# Merge commits are not checked: the only ones a pull request has are
+# GitHub's "update branch" merges, and a squash merge leaves none of them on
+# main. On a merge queue entry or a push there is no pull request, so the job
+# is skipped, which CI Gate passes.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  dco:
+    name: Every commit is signed off by its author
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Check each commit's Signed-off-by
+        env:
+          BASE: ${{ github.event.pull_request.base.ref }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git fetch --quiet origin "$BASE"
+          unsigned=0
+          for commit in $(git rev-list --no-merges "$HEAD" --not FETCH_HEAD); do
+            name="$(git log -1 --format=%an "$commit")"
+            email="$(git log -1 --format=%ae "$commit")"
+            signoffs="$(git log -1 --format='%(trailers:key=Signed-off-by,valueonly)' "$commit")"
+            # A GitHub App signs off under its own name with a support address,
+            # not the noreply address it commits as: dependabot[bot] does.
+            if [[ "$name" == *"[bot]" ]]; then
+              grep -q "^$(printf '%s' "$name" | sed 's/[][\.*^$]/\\&/g') <" <<<"$signoffs" && continue
+            else
+              grep -qxF "$name <$email>" <<<"$signoffs" && continue
+            fi
+            echo "::error::$commit, \"$(git log -1 --format=%s "$commit")\", has no Signed-off-by: $name <$email>. Sign off with git commit -s."
+            unsigned=1
+          done
+          exit "$unsigned"
