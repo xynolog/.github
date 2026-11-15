@@ -15,5 +15,6 @@ updates:
     groups:
       github-actions:
         patterns: ["*"]
+    labels: ["dependencies"]
     commit-message:
       prefix: ci

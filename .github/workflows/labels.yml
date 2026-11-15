@@ -1,0 +1,46 @@
+name: Labels
+
+# The labels every xynolog repository has, and no others. On a push to the
+# repository's main this sets each one's colour and description, and deletes
+# every label not in the list, GitHub's defaults and Dependabot's included.
+# A repository's CI calls it, pinned by commit, from a job its CI Gate waits
+# for; on any other event the job is skipped, which CI Gate passes:
+#
+#   labels:
+#     uses: xynolog/.github/.github/workflows/labels.yml@<commit>
+#     permissions:
+#       issues: write
+on:
+  workflow_call:
+
+jobs:
+  labels:
+    name: The repository's labels are the org's
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Set the org's labels and delete every other
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          # name|colour|description, one label a line.
+          LABELS: |
+            bug|d73a4a|Something does not work as it should
+            enhancement|a2eeef|A new feature or a better way
+            documentation|0075ca|Documentation only
+            dependencies|0366d6|A dependency's version moves
+            security|b60205|A vulnerability, or hardening against one
+            refactor|fbca04|Structure changes, behaviour does not
+            ci|1d76db|CI, workflows and repository automation
+        run: |
+          wanted=""
+          while IFS='|' read -r name colour description; do
+            [ -n "$name" ] || continue
+            gh label create "$name" --color "$colour" --description "$description" --force
+            wanted="$wanted$name"$'\n'
+          done <<<"$LABELS"
+          gh label list --limit 500 --json name --jq '.[].name' | while read -r existing; do
+            grep -qxF "$existing" <<<"$wanted" || gh label delete "$existing" --yes
+          done
