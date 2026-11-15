@@ -1,9 +1,5 @@
-# Code of conduct
+# The AI Alliance - Code of Conduct and Covenant
 
-Everyone taking part in the xynolog repositories, in issues, pull requests,
-reviews and discussions, follows the [Contributor Covenant, version
-2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/).
+The AI Alliance code of conduct can be found on the AI Alliance [here](https://ai-alliance.cdn.prismic.io/ai-alliance/Zl-MG5m069VX1dgH_AIAllianceCodeofConduct.pdf) (PDF).  Rather than maintain copies in two places, we refer you to that webpage for the details.
 
-Report unacceptable behaviour privately to the maintainers, through a
-private security advisory on any repository (see SECURITY.md). Reports are
-read by the maintainers only.
+See also [this page](https://thealliance.ai/contribute) for additional information on contributing to AI Alliance projects.
