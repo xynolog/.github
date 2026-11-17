@@ -26,12 +26,15 @@ The [CLI's README](https://github.com/xynolog/cli#readme) covers the options.
 
 | Repository | What it holds |
 | --- | --- |
+| [.github](https://github.com/xynolog/.github) | Organization-wide community files, shared workflows, and repository settings |
+| [build-tools](https://github.com/xynolog/build-tools) | Build scripts the repositories share |
+| [cli](https://github.com/xynolog/cli) | `xynolog`, which brings up a full local stack in one command |
+| [docs](https://github.com/xynolog/docs) | Guides for analysts, builders, operators, and contributors |
+| [homebrew-xynolog](https://github.com/xynolog/homebrew-xynolog) | The Homebrew tap |
+| [images](https://github.com/xynolog/images) | Xynolog service images and supporting code, including the Browser |
+| [kb-template](https://github.com/xynolog/kb-template) | A starter knowledge base for the Xynolog launcher |
 | [protocol](https://github.com/xynolog/protocol) | The wire contracts: OpenAPI definitions, registries, schemas, and a conformance kit any implementation can run |
 | [sdk](https://github.com/xynolog/sdk) | Client SDKs in nine languages: TypeScript, Python, Rust, Go, C#, Kotlin, Swift, Haskell and OCaml |
-| [images](https://github.com/xynolog/images) | The service images (gateway, dispatcher, archivist, librarian, worker, smelter, weaver) and the Browser |
-| [cli](https://github.com/xynolog/cli) | `xynolog`, which brings up a full local stack in one command |
-| [homebrew-xynolog](https://github.com/xynolog/homebrew-xynolog) | The Homebrew tap |
-| [build-tools](https://github.com/xynolog/build-tools) | Build scripts the repositories share |
 
 ## Contributing
 
