@@ -36,6 +36,7 @@ jobs:
             security|b60205|A vulnerability, or hardening against one
             refactor|fbca04|Structure changes, behaviour does not
             ci|1d76db|CI, workflows and repository automation
+            codegen|5319e7|The generator, or the code it writes
         run: |
           wanted=""
           while IFS='|' read -r name colour description; do
