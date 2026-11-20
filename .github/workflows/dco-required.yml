@@ -1,0 +1,13 @@
+name: Required DCO
+
+on:
+  pull_request:
+  merge_group:
+    types: [checks_requested]
+
+permissions:
+  contents: read
+
+jobs:
+  dco:
+    uses: ./.github/workflows/dco.yml
