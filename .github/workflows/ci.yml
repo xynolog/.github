@@ -30,7 +30,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.1
-      - run: for script in scripts/*.sh; do bash -n "$script"; done
+      - run: |
+          shopt -s nullglob
+          scripts=(scripts/*.sh)
+          if ((${#scripts[@]})); then
+            for script in "${scripts[@]}"; do bash -n "$script"; done
+          else
+            echo 'No shell scripts to parse.'
+          fi
 
   # What the ruleset requires. It waits for every other job, a census holds
   # that list to the workflow's jobs, and it fails when any of them failed or
