@@ -1,0 +1,14 @@
+name: Required DCO
+
+on:
+  pull_request:
+  merge_group:
+    types: [checks_requested]
+
+permissions:
+  contents: read
+
+jobs:
+  dco:
+    if: true
+    uses: xynolog/.github/.github/workflows/dco.yml@189966d08e740aa4e79460c9fce7a85769880193
