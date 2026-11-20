@@ -11,4 +11,4 @@ permissions:
 jobs:
   dco:
     if: true
-    uses: ./.github/workflows/dco.yml
+    uses: xynolog/.github/.github/workflows/dco.yml@189966d08e740aa4e79460c9fce7a85769880193
