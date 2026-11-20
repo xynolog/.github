@@ -5,6 +5,8 @@ agents build together. Every annotation, link and generated resource is an
 event on the knowledge base's own record, so each one shows who made it and
 what it rests on.
 
+**Build a shared understanding from the sources themselves.**
+
 ## Try it
 
 ```sh
