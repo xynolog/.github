@@ -10,4 +10,5 @@ permissions:
 
 jobs:
   dco:
+    if: true
     uses: ./.github/workflows/dco.yml
