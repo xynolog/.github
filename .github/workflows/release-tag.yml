@@ -1,0 +1,60 @@
+name: Release tag
+
+# A release runs only from tags a person signed (github-org-policy R21). Every
+# release workflow, tagging or publishing, calls this from its first job and
+# makes every other job need it:
+#
+#   tag:
+#     uses: xynolog/.github/.github/workflows/release-tag.yml@<commit>
+#     with:
+#       tags: v1.2.3 go/v1.2.3
+#
+# `tags` names the tags this run releases, the one it runs at first: a tag
+# push runs at the pushed tag, and a publishing workflow is dispatched with
+# --ref at it. Each is fetched again as itself, an annotated tag object, rather
+# than trusted as the checkout left it. A tag object names itself, and that name
+# must be the ref's, so a signed tag cannot stand in for another. Each must sit
+# on this run's commit and be signed by the release signer. main must hold the
+# commit, so what is released came through a pull request.
+on:
+  workflow_call:
+    inputs:
+      tags:
+        description: The tags this run releases, space-separated, the one it runs at first
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  tag:
+    name: The release tags are signed by the release signer, on a commit main holds
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Check each tag
+        env:
+          TAGS: ${{ inputs.tags }}
+          # The one key a release tag may be signed with. A pull request that
+          # changes it changes who can release any Xynolog product.
+          RELEASE_SIGNER: 'release namespaces="git" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJJ31NyQTK0Ei9DAoAw6TdxWueTtsRtLv0hPp368eynn'
+        run: |
+          fail() { echo "::error::$1" >&2; exit 1; }
+          read -r -a tags <<< "$TAGS"
+          test "${#tags[@]}" -gt 0 || fail "no tag to check"
+          test "$GITHUB_REF" = "refs/tags/${tags[0]}" || fail "this run is at $GITHUB_REF, not at the release tag ${tags[0]}"
+          printf '%s\n' "$RELEASE_SIGNER" > "$RUNNER_TEMP/release-signers"
+          for tag in "${tags[@]}"; do
+            git fetch --quiet --force --no-tags origin "+refs/tags/$tag:refs/tags/$tag" || fail "$tag was not pushed"
+            test "$(git cat-file -t "refs/tags/$tag")" = tag || fail "$tag is not an annotated tag"
+            test "$(git for-each-ref --format='%(tag)' "refs/tags/$tag")" = "$tag" || fail "the tag object pushed as $tag names itself otherwise"
+            test "$(git rev-parse "refs/tags/$tag^{commit}")" = "$(git rev-parse HEAD)" || fail "$tag is not on this commit"
+            git -c gpg.format=ssh -c gpg.ssh.allowedSignersFile="$RUNNER_TEMP/release-signers" verify-tag "$tag" || fail "the release signer did not sign $tag"
+          done
+          git fetch --quiet origin main
+          git merge-base --is-ancestor HEAD FETCH_HEAD || fail "main does not hold $(git rev-parse HEAD)"
+          echo "Released from ${tags[*]} at $(git rev-parse HEAD), which main holds."
