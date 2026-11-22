@@ -37,6 +37,7 @@ jobs:
             refactor|fbca04|Structure changes, behaviour does not
             ci|1d76db|CI, workflows and repository automation
             codegen|5319e7|The generator, or the code it writes
+            no-changelog|ededed|Needs no changelog entry: nothing a consumer of a package sees changes
         run: |
           wanted=""
           while IFS='|' read -r name colour description; do
